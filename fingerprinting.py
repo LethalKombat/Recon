@@ -1,4 +1,5 @@
 import subprocess
+import httpx
 
 def enumerate_subdomains(target_domain):
     """Run Subfinder to enumerate subdomains."""
@@ -6,12 +7,15 @@ def enumerate_subdomains(target_domain):
     return result.stdout.splitlines()
 
 def filter_live_subdomains(subdomains):
-    """Check for live subdomains using 'ping'."""
+    """Check for live subdomains using httpx."""
     live_subdomains = []
     for subdomain in subdomains:
-        response = subprocess.run(["ping", "-c", "1", subdomain], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if response.returncode == 0:
-            live_subdomains.append(subdomain)
+        try:
+            response = httpx.get(f"http://{subdomain}", timeout=3)
+            if response.status_code < 400:
+                live_subdomains.append(subdomain)
+        except httpx.RequestError:
+            pass  # If request fails, subdomain is likely not live
     return live_subdomains
 
 def run_nmap_scan(live_subdomains):
