@@ -1,5 +1,7 @@
 # Footprinting & Reconnaisance Automation Script
 
+A Python script that automates subdomain enumeration, live subdomain filtering, and Nmap scanning for deeper reconnaissance.
+
 
 ## Features:
 - **Subdomain Enumeration** using Subfinder.  
